@@ -21,3 +21,8 @@ This template is configured to use [Git Large File Storage (LFS)](https://git-lf
 To ensure your assets are tracked correctly:
 1. Ensure Git LFS is installed on your machine (`git lfs install`).
 2. The provided `.gitattributes` file will automatically handle LFS tracking for standard game asset extensions.
+ 
+## License
+This project uses a split license:
+- **Source Code:** Licensed under the [GNU General Public License v3.0 (GPLv3)](LICENSE).
+- **Game Assets:** Unless otherwise specified, art, audio, and models in `game/assets/` are licensed under [Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0)](LICENSE-assets).
