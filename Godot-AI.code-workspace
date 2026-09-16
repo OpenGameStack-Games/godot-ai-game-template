@@ -1,4 +1,4 @@
-﻿{
+{
 	"folders": [
 		{
 			"name": "GameTemplate",
@@ -6,8 +6,8 @@
 		}
 	],
 	"settings": {
-		"godotTools.editorPath.godot4": "C:\\Users\\kevin\\AppData\\Local\\OGS\\Library\\godot\\4.7.2\\Godot_v4.7.2-stable_win64_console.exe",
-		"GameTemplate.godotExecutable": "C:\\Users\\kevin\\AppData\\Local\\OGS\\Library\\godot\\4.7.2\\Godot_v4.7.2-stable_win64_console.exe"
+		"godotTools.editorPath.godot4": "godot",
+		"GameTemplate.godotExecutable": "godot"
 	},
 	"tasks": {
 		"version": "2.0.0",
@@ -15,7 +15,7 @@
 			{
 				"label": "Run Headless Tests",
 				"type": "shell",
-				"command": "C:\\Users\\kevin\\AppData\\Local\\OGS\\Library\\godot\\4.7.2\\Godot_v4.7.2-stable_win64_console.exe",
+				"command": "godot",
 				"args": [
 					"--headless",
 					"--path",
