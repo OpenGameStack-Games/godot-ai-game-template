@@ -1,0 +1,61 @@
+# Godot 4+ specific ignores
+.godot/
+.import/
+export.cfg
+*.translation
+
+# Android Build Secrets & Binaries
+*.keystore
+*.jks
+*.apk
+*.aab
+
+# Agent Worktrees
+.worktrees/
+
+# Godot mono-specific ignores
+.mono/
+data_*/
+
+# Import cache/generated files
+*.import
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Blender
+*.blend1
+*.blend2
+*.blend[0-9][0-9]
+blender_debug_output.txt
+
+# GIMP
+*~
+*.xcf.bak
+
+# Krita
+*.kra~
+*.kra.autosave
+*~lock~
+
+# Audacity
+*.aup~
+*_data/
+*.au
+
+# Editor/IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
+game/android/build/build/
+game/android/build/.gradle/
+game/android/build/app/build/
+__pycache__/
+*.py[cod]
+bundletool.jar
+android-16kb-validation/
