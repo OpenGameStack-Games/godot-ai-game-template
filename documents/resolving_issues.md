@@ -1,6 +1,6 @@
-# Issue Resolution Workflow & Standards
+﻿# Issue Resolution Workflow & Standards
 
-This document establishes the official standards, Git worktree workflow, and coding guidelines for anyone resolving issues in the **LetterLogic** repository—whether human contributor or autonomous agent.
+This document establishes the official standards, Git worktree workflow, and coding guidelines for anyone resolving issues in the **[Game Name]** repositoryâ€”whether human contributor or autonomous agent.
 
 ---
 
@@ -169,3 +169,4 @@ After opening the PR:
 * **Do not merge the pull request.**
 * **Do not delete the worktree yet** (it can be kept until the PR is merged by the reviewer agent, or cleaned up once the PR branch is confirmed safely on remote).
 * Report the PR URL and summary back to the user.
+

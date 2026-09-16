@@ -1,6 +1,6 @@
-# Pull Request Review, Documentation & Merge Standards
+﻿# Pull Request Review, Documentation & Merge Standards
 
-This document establishes the official standards and workflow for reviewing, documenting, and merging Pull Requests in the **LetterLogic** repository—whether handled by a human developer or an autonomous agent.
+This document establishes the official standards and workflow for reviewing, documenting, and merging Pull Requests in the **[Game Name]** repositoryâ€”whether handled by a human developer or an autonomous agent.
 
 ---
 
@@ -42,7 +42,7 @@ Before approving or merging any Pull Request, verify the following:
 
 ## 3. PR Inspection & Local Testing Protocol
 
-All review operations—inspecting code, running automated tests, and committing documentation updates—should take place within an isolated Git worktree under `.worktrees/`. This ensures the main workspace remains pristine, prevents Git checkout conflicts (`already checked out at...`), and allows multiple agents or developers to work concurrently on the same machine.
+All review operationsâ€”inspecting code, running automated tests, and committing documentation updatesâ€”should take place within an isolated Git worktree under `.worktrees/`. This ensures the main workspace remains pristine, prevents Git checkout conflicts (`already checked out at...`), and allows multiple agents or developers to work concurrently on the same machine.
 
 ### 1. View PR Overview & Diff
 Inspect the PR description and diff via the GitHub CLI:
@@ -144,4 +144,5 @@ git pull origin main
 # Delete the local feature branch (if it was checked out locally)
 git branch -d feature/issue-<number>-<short-description>
 ```
+
 

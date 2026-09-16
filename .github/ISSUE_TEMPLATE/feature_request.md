@@ -1,4 +1,4 @@
----
+﻿---
 name: Feature request
 about: Propose a new gameplay mechanic, UI enhancement, or improvement
 title: ''
@@ -9,7 +9,7 @@ assignees: ''
 <!-- Include if blocked by prior work: **Depends on #<issue_number>** -->
 
 ### 1. Problem & Context
-A concise explanation of the user story, design motivation, and why this enhancement improves LetterLogic.
+A concise explanation of the user story, design motivation, and why this enhancement improves [Game Name].
 
 ### 2. Technical Scope & Affected Files
 Direct references to files, scenes, or autoloads that need modification or creation:
@@ -32,3 +32,4 @@ Direct references to files, scenes, or autoloads that need modification or creat
 - [ ] Update `documents/requirements.md` to reflect new or modified specifications.
 - [ ] Update `documents/manual_testing.md` with new manual test verification steps.
 - [ ] Update `README.md` if user-facing behavior, controls, rules, or visuals are altered.
+

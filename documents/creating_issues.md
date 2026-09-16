@@ -1,6 +1,6 @@
-# GitHub Issue Creation Standard & Guidelines
+﻿# GitHub Issue Creation Standard & Guidelines
 
-This document outlines the standard specifications, structure, and workflow for creating GitHub issues for the **LetterLogic** project. Adhering to these standards ensures that any contributor—human developer or autonomous agent—can pick up an issue, understand the context and requirements without ambiguity, implement the change, and properly verify their work.
+This document outlines the standard specifications, structure, and workflow for creating GitHub issues for the **[Game Name]** project. Adhering to these standards ensures that any contributorâ€”human developer or autonomous agentâ€”can pick up an issue, understand the context and requirements without ambiguity, implement the change, and properly verify their work.
 
 ---
 
@@ -16,7 +16,7 @@ Every issue created in this repository must meet the following criteria:
 
 ## 2. Standard Issue Structure
 
-All issues filed in LetterLogic must follow this standardized layout. When creating an issue on GitHub, use one of the predefined templates in `.github/ISSUE_TEMPLATE/`:
+All issues filed in [Game Name] must follow this standardized layout. When creating an issue on GitHub, use one of the predefined templates in `.github/ISSUE_TEMPLATE/`:
 * **Bug Report (`.github/ISSUE_TEMPLATE/bug_report.md`):** For defects, unexpected behavior, logic bugs, or UI glitches. Pre-labeled with `bug`.
 * **Feature Request (`.github/ISSUE_TEMPLATE/feature_request.md`):** For new gameplay mechanics, visual enhancements, or architectural improvements. Pre-labeled with `enhancement`.
 
@@ -137,4 +137,5 @@ gh issue create --title "<Prefix> - <Short Summary>" --body "$body" --label "<bu
 
 ## 6. Reference Example
 
-See [Issue #21: UI - Update Absent Letter Color to Flat Red Across Tiles, Keyboard, and Share Grid](https://github.com/OpenGameStack-Games/LetterLogic/issues/21) for a live example of an issue meeting this standard.
+See [Issue #21: UI - Update Absent Letter Color to Flat Red Across Tiles, Keyboard, and Share Grid](https://github.com/OpenGameStack-Games/[Game Name]/issues/21) for a live example of an issue meeting this standard.
+
