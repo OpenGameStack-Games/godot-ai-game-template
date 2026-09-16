@@ -1,0 +1,7 @@
+{
+	"allowed_hosts": [],
+	"allowed_ports": [],
+	"force_offline": false,
+	"offline_mode": false,
+	"schema_version": 1
+}

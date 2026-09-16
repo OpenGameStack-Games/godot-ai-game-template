@@ -1,0 +1,10 @@
+{
+	"schema_version": 1,
+	"stack_name": "[Game Name]",
+	"tools": [
+		{
+			"id": "godot",
+			"version": "4.7.2"
+		}
+	]
+}
