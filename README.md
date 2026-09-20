@@ -15,6 +15,25 @@ To get started with OGS:
 2. Open the OGS Launcher and click **Add Project** to register this repository.
 3. The launcher will read `stack.json` and automatically download the correct Godot version and any other required tools for your team.
 
+## AI Agent Integration (MCP)
+This template integrates the Model Context Protocol (MCP) to allow your AI assistants (like Claude Desktop, Cursor, or Antigravity) to directly interact with the running game. 
+
+The `McpInteractionServer` is pre-registered as an AutoLoad. When you playtest your game, it exposes a TCP bridge.
+
+**To connect your AI Assistant:**
+1. Clone or download the [godot-mcp](https://github.com/tugcantopaloglu/godot-mcp) repository locally.
+2. In the `godot-mcp` directory, run `npm install` and `npm run build`.
+3. Configure your AI agent to launch the node server as an MCP server. For example, in Claude Desktop, add to your `claude_desktop_config.json`:
+   ```json
+   "mcpServers": {
+     "godot": {
+       "command": "node",
+       "args": ["/path/to/godot-mcp/build/index.js", "/path/to/your/game"]
+     }
+   }
+   ```
+4. Run your game! Your AI agent can now use the `screenshot` tool to visually inspect the game (which automatically saves a high-res snapshot to `res://agent_screenshot.png`), interact with UI elements, and execute runtime GDScript.
+
 ## Git LFS Requirement
 This template is configured to use [Git Large File Storage (LFS)](https://git-lfs.com/) for all binary assets (images, audio, video, 3D models, fonts, etc.). It is assumed that repositories instantiated from this template will have Git LFS installed and enabled locally.
 
