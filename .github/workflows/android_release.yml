@@ -1,4 +1,4 @@
-﻿name: Android Build & Release
+name: Android Build & Release
 
 on:
   push:
@@ -87,11 +87,20 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
+      - name: Install Android Build Template
+        run: |
+          mkdir -p game/android/build
+          unzip -q $HOME/.local/share/godot/export_templates/${GODOT_TEMPLATES_VERSION}/android_source.zip -d game/android/build
+          echo "${GODOT_TEMPLATES_VERSION}" > game/android/.build_version
+
       - name: Make Gradle Wrapper Executable
-        run: chmod +x game/android/build/gradlew
+        run: |
+          if [ -f "game/android/build/gradlew" ]; then
+            chmod +x game/android/build/gradlew
+          fi
 
       - name: Export Android AAB
-        run: godot --verbose --headless --path ./game --export-release "Android" Game\.aab
+        run: godot --verbose --headless --path ./game --export-release "Android" Game.aab
 
       - name: Verify Android Build Inputs
         run: |
@@ -113,7 +122,7 @@ jobs:
         with:
           releaseDirectory: ./game
           signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
-          alias: ${{ secrets.KEY_ALIAS }}
+          alias: ${{ secrets.KEYSTORE_ALIAS || secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
         env:
@@ -171,7 +180,7 @@ jobs:
 
       - name: Upload Release Assets
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             ./game/*.aab

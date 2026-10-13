@@ -1,2 +1,3 @@
-﻿[gd_scene format=3 uid="uid://blank"]
+[gd_scene format=3]
+
 [node name="Node" type="Node"]

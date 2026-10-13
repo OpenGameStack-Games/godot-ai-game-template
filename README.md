@@ -16,14 +16,25 @@ To get started with OGS:
 3. The launcher will read `stack.json` and automatically download the correct Godot version and any other required tools for your team.
 
 ## AI Agent Integration (MCP)
-This template integrates the Model Context Protocol (MCP) to allow your AI assistants (like Claude Desktop, Cursor, or Antigravity) to directly interact with the running game. 
+This template integrates the Model Context Protocol (MCP) to allow AI assistants (like Claude Desktop, Cursor, or Antigravity) to directly interact with the running game.
 
-The `McpInteractionServer` is pre-registered as an AutoLoad. When you playtest your game, it exposes a TCP bridge.
+The `McpInteractionServer` is pre-registered as an AutoLoad (`res://autoloads/mcp_interaction_server.gd`). When you run your game, it exposes a local TCP bridge on port `9090`.
 
-**To connect your AI Assistant:**
+### Option A: Zero-Dependency Python Client (Recommended for Agents)
+A lightweight CLI script `mcp_client.py` is included in the project root. While the game is running, execute:
+```powershell
+python mcp_client.py screenshot      # Saves high-res visual snapshot to screenshot.png
+python mcp_client.py click 360 640   # Sends click input at coordinates (x, y)
+python mcp_client.py get_scene_tree  # Returns full SceneTree hierarchy as JSON
+python mcp_client.py get_ui_elements # Lists interactive UI controls
+python mcp_client.py raw '<json>'    # Sends custom MCP JSON payload
+```
+
+### Option B: Full Node.js MCP Server Bridge
+For assistant integration in Claude Desktop or IDEs:
 1. Clone or download the [godot-mcp](https://github.com/tugcantopaloglu/godot-mcp) repository locally.
 2. In the `godot-mcp` directory, run `npm install` and `npm run build`.
-3. Configure your AI agent to launch the node server as an MCP server. For example, in Claude Desktop, add to your `claude_desktop_config.json`:
+3. Configure your AI agent configuration (e.g. `claude_desktop_config.json`):
    ```json
    "mcpServers": {
      "godot": {
@@ -33,6 +44,12 @@ The `McpInteractionServer` is pre-registered as an AutoLoad. When you playtest y
    }
    ```
 4. Run your game! Your AI agent can now use the `screenshot` tool to visually inspect the game (which automatically saves a high-res snapshot to `res://agent_screenshot.png`), interact with UI elements, and execute runtime GDScript.
+
+## Cross-Platform Builds & CI/CD
+This template includes production-tested GitHub Actions workflows:
+- **Android Release (`android_release.yml`):** Automatically triggers on tag push (`v*`). Runs headless tests, validates 16 KiB page size compliance, builds an Android App Bundle (`.aab`) with ProGuard mappings and native debug symbols, signs the bundle, and publishes release assets.
+- **Web Release (`web_release.yml`):** Automatically builds an HTML5 Web export, attaches a zip archive to GitHub Releases, and supports automated deployment to Itch.io via Butler when `BUTLER_API_KEY`, `ITCH_USERNAME`, and `ITCH_GAME` secrets are configured.
+- **GL Compatibility Renderer:** Configured out of the box with `gl_compatibility` (OpenGL ES 3.0 / WebGL 2.0), guaranteeing optimal compatibility across Web/HTML5 exports and Android mobile hardware.
 
 ## Git LFS Requirement
 This template is configured to use [Git Large File Storage (LFS)](https://git-lfs.com/) for all binary assets (images, audio, video, 3D models, fonts, etc.). It is assumed that repositories instantiated from this template will have Git LFS installed and enabled locally.

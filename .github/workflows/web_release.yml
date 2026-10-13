@@ -1,0 +1,78 @@
+name: Web Export & Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: 4.7.2-stable
+  GODOT_TEMPLATES_VERSION: 4.7.2.stable
+  ITCH_USERNAME: ${{ secrets.ITCH_USERNAME }}
+  ITCH_GAME: ${{ secrets.ITCH_GAME || secrets.ITCH_GAME_ID }}
+  BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+
+jobs:
+  export-web:
+    name: Build Web Export & Deploy
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download and Install Godot
+        run: |
+          wget "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip "Godot_v${GODOT_VERSION}_linux.x86_64.zip" -d /tmp
+          sudo mv "/tmp/Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATES_VERSION}"
+          wget "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          unzip "Godot_v${GODOT_VERSION}_export_templates.tpz" -d /tmp
+          mv /tmp/templates/* "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATES_VERSION}/"
+
+      - name: Import Assets
+        run: godot --headless --path ./game --editor --quit
+
+      - name: Run Headless Tests
+        run: godot --headless --path ./game -s res://tests/test_runner.gd
+
+      - name: Export Web
+        run: |
+          mkdir -p game/export/web
+          godot --verbose --headless --path ./game --export-release "Web" export/web/index.html
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Web-Export
+          path: ./game/export/web/
+
+      - name: Deploy to Itch.io
+        if: startsWith(github.ref, 'refs/tags/v') && env.BUTLER_API_KEY != '' && env.ITCH_USERNAME != '' && env.ITCH_GAME != ''
+        uses: manleydev/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
+          CHANNEL: html
+          ITCH_GAME: ${{ env.ITCH_GAME }}
+          ITCH_USER: ${{ env.ITCH_USERNAME }}
+          PACKAGE: ./game/export/web
+
+      - name: Zip Web Build for Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          cd game/export/web
+          zip -r ../../../Web-Export.zip ./*
+
+      - name: Upload Release Assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Web-Export.zip

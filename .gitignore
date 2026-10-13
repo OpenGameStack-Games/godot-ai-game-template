@@ -59,3 +59,16 @@ __pycache__/
 *.py[cod]
 bundletool.jar
 android-16kb-validation/
+
+# Screenshots & Agent Visual QA
+screenshot.png
+agent_screenshot.png
+agent_screenshot.png.import
+
+# Agent Scratch Files
+pr_body.md
+pr_body.txt
+*.tmp.md
+open_issues.json
+tmp_*
+test_*.tmp
