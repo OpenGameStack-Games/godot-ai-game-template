@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansSymbols-Regular.ttf" id="1_symbols"]
+[ext_resource type="FontFile" path="res://assets/fonts/DejaVuSans.ttf" id="2_dejavu"]
+
+[resource]
+fallbacks = Array[Font]([ExtResource("1_symbols"), ExtResource("2_dejavu")])

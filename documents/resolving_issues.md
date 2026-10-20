@@ -110,7 +110,12 @@ git worktree add .worktrees/issue-21 -b feature/issue-21-absent-color-red
 4. **UI Design & Responsiveness:**
    * When using `GridContainer`, Godot natively ignores invisible children (`visible = false`), causing remaining nodes to reflow. If you need fixed slot positions, keep nodes visible and clear text or modulate opacity.
    * Root screen scripts are responsible for explicitly wiring child components to domain models. Verify that methods invoked on child nodes actually exist on those component scripts before calling them.
-5. **Commenting & Documentation:**
+5. **Web/HTML5 Font Fallbacks & Unicode Symbols:**
+   * Browser WASM builds (`Web` export) run inside a sandbox with **no access to host OS system fonts**. While `allow_system_fallback=true` masks missing glyphs on Windows and Android by falling back to system fonts, any unbundled Unicode symbol (`☰`, `✕`, `▸`, `▾`, `★`, `↺`, `↻`, `⌫`, `▶`, `→`) will render as a missing-glyph tofu box (`□`) on Web/Itch.io unless covered by an explicitly bundled fallback `FontFile`.
+   * Do **NOT** use a `SystemFont` as the global `default_font` (which alters standard Latin text layout metrics across platforms); always use a `FontVariation` or `FontFile` with explicit `fallbacks` attached (such as the preconfigured `res://resources/default_font.tres`).
+   * Whenever a custom `FontFile`, `FontVariation`, or `Theme` is added or overridden on UI controls, `res://assets/fonts/NotoSansSymbols-Regular.ttf` and `res://assets/fonts/DejaVuSans.ttf` **MUST** remain attached to its `fallbacks` array, and `*.ttf` must remain in `include_filter` for all export presets in `game/export_presets.cfg`.
+   * Any Unicode symbol used in UI text must be verified in unit tests using `font.has_char(ord(ch))` (or `font.has_char(ch.unicode_at(0))`) against the active theme/control font.
+6. **Commenting & Documentation:**
    * Do not write redundant comments stating the obvious.
    * Document the *intent*, *assumptions*, or mathematical/algorithmic logic.
    * Every autoload and major script must contain a header docstring explaining its domain responsibility.

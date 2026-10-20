@@ -1,6 +1,6 @@
-﻿# GitHub Issue Creation Standard & Guidelines
+# GitHub Issue Creation Standard & Guidelines
 
-This document outlines the standard specifications, structure, and workflow for creating GitHub issues for the **[Game Name]** project. Adhering to these standards ensures that any contributorâ€”human developer or autonomous agentâ€”can pick up an issue, understand the context and requirements without ambiguity, implement the change, and properly verify their work.
+This document outlines the standard specifications, structure, and workflow for creating GitHub issues for the **[Game Name]** project. Adhering to these standards ensures that any contributor—human developer or autonomous agent—can pick up an issue, understand the context and requirements without ambiguity, implement the change, and properly verify their work.
 
 ---
 
@@ -85,7 +85,8 @@ Before publishing an issue via GitHub:
 1. [ ] **Search Existing Issues:** Run `gh issue list --state all` to confirm the issue doesn't already exist or duplicate past work.
 2. [ ] **Inspect Codebase:** Verify the exact file paths, variable names, and current behavior in the code.
 3. [ ] **Clarify Design Choices:** Resolve any open design questions (e.g., color hex codes, UI behaviors, platform fallbacks) before publishing so the issue body contains firm decisions rather than open questions.
-4. [ ] **Include Documentation Acceptance Criteria:** Ensure the mandatory documentation coordination checklist is included per `documents/reviewing_and_merging_prs.md`.
+4. [ ] **Web/HTML5 Font & Symbol Guardrails:** If the issue introduces custom fonts, themes, or Unicode symbols/icons (`☰`, `✕`, `▸`, `▾`, `★`, `↺`, `↻`, `⌫`, `▶`, `→`) in UI controls, include acceptance criteria requiring `res://assets/fonts/NotoSansSymbols-Regular.ttf` and `res://assets/fonts/DejaVuSans.ttf` in the font's `fallbacks` array and unit tests asserting `font.has_char(ord(ch))` (since Web/HTML5 WASM builds cannot access host OS system fonts).
+5. [ ] **Include Documentation Acceptance Criteria:** Ensure the mandatory documentation coordination checklist is included per `documents/reviewing_and_merging_prs.md`.
 
 ---
 
