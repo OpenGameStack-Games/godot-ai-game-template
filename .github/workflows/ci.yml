@@ -1,0 +1,55 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: 4.7.2-stable
+
+jobs:
+  test:
+    name: Run Python & Godot Headless Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Python Validation Unit Tests
+        run: python -m unittest discover -s scripts -p "test_*.py" -v
+
+      - name: Cache Godot Binary
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/bin/godot
+          key: godot-binary-${{ env.GODOT_VERSION }}
+
+      - name: Download and Install Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q "Godot_v${GODOT_VERSION}_linux.x86_64.zip" -d /tmp
+          sudo mv "/tmp/Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+
+      - name: Import Godot Assets
+        run: godot --headless --path ./game --editor --quit
+
+      - name: Run Godot Headless Unit Tests
+        run: godot --headless --path ./game -s res://tests/test_runner.gd

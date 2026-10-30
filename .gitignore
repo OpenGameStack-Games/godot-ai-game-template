@@ -9,6 +9,7 @@ export.cfg
 *.jks
 *.apk
 *.aab
+game/export/
 
 # Agent Worktrees
 .worktrees/
@@ -61,13 +62,21 @@ android-16kb-validation/
 
 # Screenshots & Agent Visual QA
 screenshot.png
+screenshot.png.import
+screenshot.png.uid
 agent_screenshot.png
 agent_screenshot.png.import
+agent_screenshot.png.uid
+game/agent_screenshot.png
+game/agent_screenshot.png.import
+game/agent_screenshot.png.uid
 
 # Agent Scratch Files
 pr_body.md
 pr_body.txt
+release_notes.md
 *.tmp.md
+*.tmp.ps1
 open_issues.json
 tmp_*
 test_*.tmp

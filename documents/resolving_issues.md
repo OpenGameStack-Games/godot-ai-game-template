@@ -1,13 +1,14 @@
 # Issue Resolution Workflow & Standards
 
-This document establishes the official standards, Git worktree workflow, and coding guidelines for anyone resolving issues in the **[Game Name]** repository—whether human contributor or autonomous agent.
+This document establishes the official standards, Git worktree workflow, and coding guidelines for anyone resolving issues in the **[Game Name]** repository, whether a human contributor or an autonomous agent.
 
 ---
 
 ## 0. Operational Rules
-* **PowerShell Chaining:** When executing shell commands, NEVER use `&&` to chain commands together (it requires PowerShell 7+). Instead, use `;` or execute commands sequentially in separate tool calls.
-* **File Generation Encoding:** Generating text files via PowerShell pipes (e.g., `>` or `Set-Content`) or .NET APIs often creates UTF-16 LE encoding errors or adds a UTF-8 BOM (Byte Order Mark). Godot will completely fail to parse `.tscn` files that contain a BOM (`Parse Error: Expected '['`). ALWAYS use the `write_to_file` and `replace_file_content` agent tools to generate/edit text or script files to ensure proper UTF-8 encoding without BOMs.
-* **Documentation Redundancy:** Before requesting the PR Reviewer to document a feature or testing steps, always verify if the documentation already exists in `documents/requirements.md` or `documents/manual_testing.md`. Do not duplicate existing specification notes.
+* **PowerShell Chaining:** When executing shell commands, NEVER use `&&` to chain commands together (unsupported in Windows PowerShell 5.1). Instead, use `;` or execute commands sequentially in separate tool calls.
+* **Stateless Shell Working Directory:** In agentic environments, each shell command call starts in a fresh session at the repository root (`cd` / `Set-Location` does NOT persist across separate tool calls). When operating on a worktree under `.worktrees/issue-<number>`, always pass explicit paths (`git -C .worktrees/issue-<number> ...` and `godot --headless --path .worktrees/issue-<number>/game ...`) or prefix `Set-Location .worktrees/issue-<number>;` inside the same command call.
+* **File Generation Encoding:** Generating text files via PowerShell pipes (`>` or PowerShell 5.1 `Set-Content -Encoding UTF8`) adds a UTF-8 BOM (Byte Order Mark) or UTF-16 LE encoding. Godot fails to parse `.tscn`, `.tres`, and `.gd` files that contain a BOM (`Parse Error: Expected '['`). ALWAYS use the native agent file tools (`write_file` / `edit_file`, or legacy `write_to_file` / `replace_file_content`) to create and edit project files cleanly in UTF-8 without BOM.
+* **Documentation Redundancy:** Before requesting the PR Reviewer to document a feature or testing steps, always verify whether the specification already exists in `documents/requirements.md` or `documents/manual_testing.md`. Do not duplicate existing specification notes.
 
 ---
 
@@ -17,14 +18,14 @@ The **Issue Resolver** is responsible for taking an open issue from conception t
 
 ### Primary Responsibilities
 1. **Triage & Select:** Identify the next unblocked issue based on issue number and dependencies.
-2. **Worktree Isolation:** Create and work within an isolated Git worktree under `.worktrees/`.
+2. **Worktree Isolation:** Create and work within an isolated Git worktree under `.worktrees/issue-<number>`.
 3. **Implement:** Write clean, modular, and statically typed GDScript code meeting all acceptance criteria.
 4. **Test:** Run the automated test suite, perform visual QA via MCP, and add new automated tests in `game/tests/`.
-5. **Detailed Pull Request:** Push the feature branch and submit a highly detailed PR against `main`.
+5. **Detailed Pull Request:** Push the feature branch and submit a detailed PR against `main`.
 
 ### Explicit Boundaries (What the Issue Resolver Does NOT Do)
 * **DO NOT merge into `main`:** The Issue Resolver must never merge the PR or push directly to `main`.
-* **DO NOT update project documentation:** Updating `documents/requirements.md`, `documents/manual_testing.md`, or `README.md` is handled by the **PR Reviewer & Documentation Agent**. The resolver provides the necessary handoff details in the PR body so the reviewing agent can update documentation accurately.
+* **DO NOT update project documentation (unless resolving a `Docs` issue):** Updating `documents/requirements.md`, `documents/manual_testing.md`, or `README.md` for feature/bug PRs is handled by the **PR Reviewer & Documentation Agent**. The resolver provides the necessary handoff details in the PR body so the reviewing agent can update documentation accurately.
 
 ---
 
@@ -78,8 +79,9 @@ git worktree add .worktrees/issue-<number> -b feature/issue-<number>-<short-desc
 ```
 *Example:*
 ```powershell
-git worktree add .worktrees/issue-21 -b feature/issue-21-absent-color-red
+git worktree add .worktrees/issue-12 -b feature/issue-12-pause-modal
 ```
+When editing files with `write_file` or `edit_file`, target paths inside `.worktrees/issue-<number>/game/...` (not the root `game/...`).
 
 ### 3. Commit Guidelines
 * Follow [Conventional Commits](https://www.conventionalcommits.org/):
@@ -103,12 +105,12 @@ git worktree add .worktrees/issue-21 -b feature/issue-21-absent-color-red
 2. **Metadata Files (`.uid`):**
    * Godot 4 generates `.uid` metadata files alongside `.gd` scripts, scenes, and assets. Always stage and commit these `.uid` files alongside your changes.
 3. **Naming Conventions:**
-   * **Classes & Nodes:** `PascalCase` (e.g., `GameBoard`, `KeyboardKey`)
-   * **Variables & Functions:** `snake_case` (e.g., `current_guess`, `_on_tile_pressed()`)
-   * **Constants:** `UPPER_SNAKE_CASE` (e.g., `MAX_ATTEMPTS = 6`, `COLOR_BG_ABSENT`)
-   * **Signals:** `snake_case` in past tense or action oriented (e.g., `letter_submitted`, `row_completed`)
+   * **Classes & Nodes:** `PascalCase` (e.g., `GameBoard`, `ActionButton`)
+   * **Variables & Functions:** `snake_case` (e.g., `current_score`, `_on_button_pressed()`)
+   * **Constants:** `UPPER_SNAKE_CASE` (e.g., `MAX_ATTEMPTS = 6`, `DEFAULT_MARGIN_TOP = 16`)
+   * **Signals:** `snake_case` in past tense or action oriented (e.g., `turn_completed`, `score_updated`)
 4. **UI Design & Responsiveness:**
-   * When using `GridContainer`, Godot natively ignores invisible children (`visible = false`), causing remaining nodes to reflow. If you need fixed slot positions, keep nodes visible and clear text or modulate opacity.
+   * When using `GridContainer`, Godot natively ignores invisible children (`visible = false`), causing remaining nodes to reflow. If you need fixed slot positions, keep nodes visible and clear text or set `modulate.a = 0.0`.
    * Root screen scripts are responsible for explicitly wiring child components to domain models. Verify that methods invoked on child nodes actually exist on those component scripts before calling them.
 5. **Web/HTML5 Font Fallbacks & Unicode Symbols:**
    * Browser WASM builds (`Web` export) run inside a sandbox with **no access to host OS system fonts**. While `allow_system_fallback=true` masks missing glyphs on Windows and Android by falling back to system fonts, any unbundled Unicode symbol (`☰`, `✕`, `▸`, `▾`, `★`, `↺`, `↻`, `⌫`, `▶`, `→`) will render as a missing-glyph tofu box (`□`) on Web/Itch.io unless covered by an explicitly bundled fallback `FontFile`.
@@ -118,7 +120,7 @@ git worktree add .worktrees/issue-21 -b feature/issue-21-absent-color-red
 6. **Commenting & Documentation:**
    * Do not write redundant comments stating the obvious.
    * Document the *intent*, *assumptions*, or mathematical/algorithmic logic.
-   * Every autoload and major script must contain a header docstring explaining its domain responsibility.
+   * Every autoload and major script must contain a header docstring (`##`) explaining its domain responsibility.
 
 ---
 
@@ -133,61 +135,67 @@ Avoid raw `print()` statements in production code. Use categorized, engine-nativ
 
 ## 6. Automated Testing Standards
 
-Every feature or bug fix touching game logic or autoloads must be backed by automated tests.
+Every feature or bug fix touching game logic, UI layout, or autoloads must be backed by automated tests.
 
 ### Agentic Visual QA (MCP Bridge)
-If your issue involves UI layout, coloring, or visual polish, you MUST visually verify your changes before submitting the PR:
-1. Start a fresh instance of the game in the background using `godot --path game`. Do NOT rely on an already-running instance, as it won't have your latest changes.
-2. This fresh instance will automatically spin up the `McpInteractionServer` AutoLoad.
-3. Use `mcp_client.py` (e.g., `python mcp_client.py screenshot`) to capture a screenshot (`agent_screenshot.png`) and inspect the SceneTree.
-4. Visually verify that your changes adhere to project style guidelines, look good, and don't break existing layouts.
-5. **CRITICAL:** Once your visual QA is complete, you must kill the background task running the Godot process to close the window and free up port 9090.
+If your issue involves UI layout, coloring, or visual polish, visually verify your changes before submitting the PR (see [`.agents/skills/mcp-visual-qa/SKILL.md`](../.agents/skills/mcp-visual-qa/SKILL.md)):
+1. Stop any lingering Godot instances: `Stop-Process -Name "godot" -Force -ErrorAction SilentlyContinue`.
+2. Start a fresh instance of the worktree game in the background: `godot --path .worktrees/issue-<number>/game`.
+3. In debug mode, this automatically starts the `McpInteractionServer` AutoLoad on `127.0.0.1:9090`.
+4. Run `python mcp_client.py ping`, `python mcp_client.py screenshot`, and `python mcp_client.py get_ui_elements` to capture `screenshot.png` and inspect the SceneTree.
+5. View `screenshot.png` with `read_file` to verify that your changes look clean and do not clip or overlap.
+6. **CRITICAL:** Once visual QA is complete, terminate the background Godot process (`Stop-Process -Name "godot" -Force -ErrorAction SilentlyContinue`) to close the window and release Windows file locks and port `9090`.
 
 ### Test Architecture
 * Tests are located in `game/tests/`.
-* Test scripts inherit from `res://tests/test_base.gd`.
+* Test scripts inherit from `TestBase` (`res://tests/test_base.gd`).
 * Every test method starts with `test_`.
-* Assertions use `assert_true()`, `assert_false()`, `assert_eq()`, `assert_ne()`, `assert_null()`, and `assert_not_null()`.
+* Optional lifecycle hooks: override `before_each() -> void` and `after_each() -> void` for per-test state setup/reset, and `cleanup() -> void` for suite-level cleanup.
+* Assertions provided by `TestBase`:
+  * `assert_true()`, `assert_false()`
+  * `assert_eq()`, `assert_ne()`
+  * `assert_gt()`, `assert_gte()`, `assert_lt()`, `assert_lte()`, `assert_approx()`
+  * `assert_null()`, `assert_not_null()`
+  * `assert_contains()`, `assert_file_exists()`
 * **CRITICAL**: When modifying UI layout or styling, write lightweight structural unit tests verifying component properties (e.g., font sizes, minimum dimensions, custom themes).
-* **CRITICAL**: When adding an Autoload, configuring an asset path in `project.godot`/`export_presets.cfg`, or generating resources, assert `FileAccess.file_exists(...)` for that exact path to ensure the asset actually exists.
+* **CRITICAL**: When adding an Autoload, configuring an asset path in `project.godot`/`export_presets.cfg`, or generating resources, assert `assert_file_exists(...)` for that exact path.
 * **CRITICAL**: GDScript lambdas capture primitives by VALUE, not by reference. When using inline lambdas to verify signal emissions, capture variables via an `Array` wrapper (e.g., `var count: Array[int] = [0]`) or an object property.
-* **CRITICAL**: The `test_runner.gd` does not initialize `project.godot` autoloads natively. To ensure testability, avoid hardcoded singleton identifier calls (e.g., `StatsManager.do_something()`) inside `RefCounted` or core logic classes. Use dependency injection, mock nodes, or look up peer singletons dynamically using `/root/SingletonName`.
-* **CRITICAL**: When testing `Control` nodes headlessly, `_ready()` is NOT invoked organically unless nodes enter the scene tree. Use `test_root_window.add_child(node)` or build a mock SceneTree structure in your test setup, and clean up with `.free()` in teardown.
+* **CRITICAL**: The `test_runner.gd` does not initialize `project.godot` autoloads as global script identifiers during `_init()`. To ensure testability, avoid hardcoded singleton identifier calls inside core logic classes; use dependency injection, mock nodes, or look up peer singletons dynamically via `/root/SingletonName`.
+* **CRITICAL**: When testing `Control` nodes headlessly, `_ready()` is NOT invoked organically unless nodes enter the scene tree. Use `test_root_window.add_child(node)` in your test setup, and clean up immediately with `node.free()` (never `queue_free()`, which leaks objects on headless exit).
 
 ### Running Automated Tests
-> [!NOTE]
-> The custom `test_runner.gd` does NOT currently support automatic `before_each()` or `after_each()` hooks. If your tests require state isolation (e.g. wiping a `user://` save file), manually call your setup and teardown methods inside each `test_*` function. Additionally, always use `.free()` instead of `.queue_free()` when cleaning up mock Nodes to prevent ObjectDB memory leaks.
-
 > [!WARNING]
-> Testing `DisplayServer` state methods (like `screen_is_kept_on()`) will FAIL when running tests via the headless runner. Bypass these assertions using `if DisplayServer.get_name() != "headless":`.
+> Testing `DisplayServer` window state methods (like `screen_is_kept_on()`) will fail when running via the headless runner. Guard those assertions using `if DisplayServer.get_name() != "headless":`.
 
-Run the headless Godot test suite. First, **CRITICALLY**, force an editor import pass to cache any newly added binary files or `class_name` definitions:
+Run the headless Godot test suite against your worktree. Always run an editor import pass first to cache any newly added resources or `class_name` definitions:
 ```powershell
-godot --headless --editor --quit --path game
-godot --headless --path game -s res://tests/test_runner.gd
+godot --headless --editor --quit --path .worktrees/issue-<number>/game
+godot --headless --path .worktrees/issue-<number>/game -s res://tests/test_runner.gd
 ```
-*(Note: This requires the Godot executable directory to be in your system's PATH, and the executable to be named `godot` or `godot.exe`/`godot.bat`).*
 
 ### Verification Gate
 * **Zero Failures:** All existing and newly created tests must pass (`Test Results: X Passed, 0 Failed`, exit code 0).
-* If any test fails, resolve the regression before pushing.
+* Note that `test_runner.gd` fails the suite if any `test_*.gd` script fails to compile or load. Fix any syntax or type errors before pushing.
 
 ---
 
 ## 7. Submitting the Pull Request
 
-Once the fix is implemented and verified:
+Once the fix is implemented and verified inside `.worktrees/issue-<number>`:
 
-### 1. Push Feature Branch
+### 1. Stage, Commit, and Push Feature Branch
 ```powershell
-git push -u origin feature/issue-<number>-<short-description>
+git -C .worktrees/issue-<number> add -A
+git -C .worktrees/issue-<number> commit -m "<type>: <concise description>"
+git -C .worktrees/issue-<number> push -u origin feature/issue-<number>-<short-description>
 ```
 
 ### 2. Create the Pull Request
-Submit the PR targeting `main` using GitHub CLI. Always write the PR body to a temporary markdown file using `write_to_file`, then pass `--body-file` to prevent PowerShell string-escaping issues:
+Submit the PR targeting `main` using GitHub CLI. Write the PR body to `pr_body.md` using `write_file`, pass `--body-file pr_body.md` to avoid PowerShell string-escaping issues, and then remove `pr_body.md`:
 
 ```powershell
 gh pr create --title "<type>: <concise description> (Resolves #<number>)" --body-file pr_body.md --base main
+Remove-Item -Path pr_body.md -Force -ErrorAction SilentlyContinue
 ```
 
 ### Required PR Body Structure
@@ -204,5 +212,5 @@ Every PR submitted by an Issue Resolver must include:
 ### 3. Stop and Stand Down
 After opening the PR:
 * **Do not merge the pull request.**
-* **Do not delete the worktree yet** (it can be kept until the PR is merged by the reviewer agent).
-* Report the PR URL and summary back to the user.
+* **Keep `.worktrees/issue-<number>` intact** so the PR Reviewer agent can reuse it for testing and documentation commits before cleaning it up during merge.
+* Report the PR URL and summary back to the orchestrator or user.

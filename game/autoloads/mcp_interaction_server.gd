@@ -16,15 +16,30 @@ var _key_map: Dictionary
 var _held_keys: Dictionary = {}
 
 func _ready() -> void:
+	# Do not expose the TCP eval server in non-debug release exports or Web/HTML5 builds
+	if not OS.is_debug_build() or OS.has_feature("web"):
+		set_process(false)
+		return
+	# Skip TCP binding during headless test/import runs unless explicitly requested
+	if DisplayServer.get_name() == "headless" and OS.get_environment("GODOT_MCP_ENABLE_HEADLESS") != "1":
+		set_process(false)
+		return
+
 	# Ensure MCP server keeps processing even when game is paused
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_init_key_map()
+	var listen_port: int = PORT
+	var env_port: String = OS.get_environment("GODOT_MCP_PORT").strip_edges()
+	if env_port.is_valid_int():
+		listen_port = env_port.to_int()
 	_server = TCPServer.new()
-	var err: int = _server.listen(PORT, "127.0.0.1")
+	var err: int = _server.listen(listen_port, "127.0.0.1")
 	if err != OK:
-		push_error("McpInteractionServer: Failed to listen on port %d, error: %d" % [PORT, err])
+		push_error("McpInteractionServer: Failed to listen on port %d, error: %d" % [listen_port, err])
+		_server = null
+		set_process(false)
 		return
-	print("McpInteractionServer: Listening on 127.0.0.1:%d" % PORT)
+	print_debug("McpInteractionServer: Listening on 127.0.0.1:%d" % listen_port)
 
 
 func _process(_delta: float) -> void:
@@ -4859,4 +4874,4 @@ func _exit_tree() -> void:
 	if _server != null:
 		_server.stop()
 		_server = null
-	print("McpInteractionServer: Stopped")
+		print_debug("McpInteractionServer: Stopped")

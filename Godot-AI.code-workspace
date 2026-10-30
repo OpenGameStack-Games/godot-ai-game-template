@@ -7,11 +7,29 @@
 	],
 	"settings": {
 		"godotTools.editorPath.godot4": "godot",
-		"GameTemplate.godotExecutable": "godot"
+		"GameTemplate.godotExecutable": "godot",
+		"files.encoding": "utf8",
+		"files.eol": "\n"
 	},
 	"tasks": {
 		"version": "2.0.0",
 		"tasks": [
+			{
+				"label": "Import Godot Assets (Headless)",
+				"type": "shell",
+				"command": "godot",
+				"args": [
+					"--headless",
+					"--editor",
+					"--quit",
+					"--path",
+					"game"
+				],
+				"presentation": {
+					"reveal": "always",
+					"panel": "dedicated"
+				}
+			},
 			{
 				"label": "Run Headless Tests",
 				"type": "shell",
@@ -31,8 +49,27 @@
 					"reveal": "always",
 					"panel": "dedicated"
 				}
+			},
+			{
+				"label": "Run Python Validation Tests",
+				"type": "shell",
+				"command": "python",
+				"args": [
+					"-m",
+					"unittest",
+					"discover",
+					"-s",
+					"scripts",
+					"-p",
+					"test_*.py",
+					"-v"
+				],
+				"group": "test",
+				"presentation": {
+					"reveal": "always",
+					"panel": "dedicated"
+				}
 			}
 		]
 	}
 }
-
