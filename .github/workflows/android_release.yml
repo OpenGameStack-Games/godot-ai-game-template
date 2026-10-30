@@ -14,6 +14,7 @@ env:
   GODOT_TEMPLATES_VERSION: 4.7.2.stable
   GODOT_EDITOR_SETTINGS_VERSION: "4.7"
   BUNDLETOOL_VERSION: 1.17.2
+  KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
 jobs:
   export-android:
@@ -115,7 +116,7 @@ jobs:
           python scripts/validate_android_16kb.py game/android/build/libs/release/*.aar
 
       - name: Sign App Bundle
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: env.KEYSTORE_BASE64 != ''
         uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: ./game

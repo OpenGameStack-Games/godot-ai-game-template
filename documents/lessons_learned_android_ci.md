@@ -82,3 +82,7 @@ If automating direct uploads to Google Play via `r0adkll/upload-google-play@v1`:
 - **Prerequisites:** The app must complete its first upload and review manually in Google Play Console before the Google Play Developer API allows automated releases.
 - **Authentication:** Store the Google Cloud Service Account JSON in a `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` GitHub Secret and grant it release permissions in Play Console.
 - **Diagnostic Artifacts:** Upload `./game/*.aab`, `./game/android/build/outputs/mapping/release/mapping.txt`, and `./game/*-native-debug-symbols.zip` together after the signing step, guarded by `if: startsWith(github.ref, 'refs/tags/v')`.
+
+## 16. GitHub Actions Disallows the `secrets` Context Directly in Step `if:` Conditionals
+When guarding a workflow step based on whether an optional repository secret is configured (such as `KEYSTORE_BASE64` in a template repository or `BUTLER_API_KEY` for Itch.io), writing `if: ${{ secrets.KEYSTORE_BASE64 != '' }}` on a step causes GitHub Actions' workflow parser to reject the entire workflow file on push (`This run likely failed because of a workflow file issue`), because `secrets` is not an allowed context in `steps[*].if`.
+- **Fix:** Bind the secret to a workflow-level or job-level `env:` variable first (`KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}`), and then reference the `env` context in the step conditional (`if: env.KEYSTORE_BASE64 != ''`).
