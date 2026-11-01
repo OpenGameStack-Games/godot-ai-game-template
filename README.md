@@ -18,12 +18,12 @@ This repository is structured for autonomous and pair-programming AI agents:
   - **[`project-bootstrap`](.agents/skills/project-bootstrap/SKILL.md):** Runbook for initializing a new game project from this template.
 
 ## OpenGameStack Integration
-This project is configured as an **OpenGameStack (OGS)** project. It includes `stack.json` and `ogs_config.json` files which define the exact environment (like Godot 4.7.2) required to run and build this game.
+This project is configured as an **OpenGameStack (OGS)** project. It includes `ogs_stack.json` and `ogs_config.json` files which define the exact environment (like Godot 4.7.2) required to run and build this game.
 
 To get started with OGS:
 1. Download the [OGS Launcher](https://github.com/OpenGameStack-Launcher/ogs-launcher).
 2. Open the OGS Launcher and click **Add Project** to register this repository.
-3. The launcher will read `stack.json` and automatically download the correct Godot version and any other required tools for your team.
+3. The launcher will read `ogs_stack.json` and automatically download the correct Godot version and any other required tools for your team.
 
 ## AI Agent Integration (MCP)
 This template integrates the Model Context Protocol (MCP) to allow AI assistants (like Antigravity, Claude Desktop, or Cursor) to directly interact with the running game.
