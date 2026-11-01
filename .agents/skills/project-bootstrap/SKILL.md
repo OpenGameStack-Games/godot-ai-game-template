@@ -27,7 +27,7 @@ Use `edit_file` (never PowerShell redirection, which can introduce UTF-8 BOMs) t
    - `package/unique_name="<Android Package ID>"`
    - `package/name="<Game Title>"`
    - `version/name="<Initial Version>"`
-3. [`stack.json`](../../../stack.json):
+3. [`ogs_stack.json`](../../../ogs_stack.json):
    - `"stack_name": "<Game Title>"`
 
 ### Documentation & Agent Instructions
@@ -52,7 +52,7 @@ If the user has described their game concept, update [`documents/requirements.md
 After updating the files, verify that no placeholders remain and all tests pass:
 ```powershell
 # 1. Verify no "[Game Name]" or "com.example.game" placeholders remain outside project-bootstrap
-Select-String -Path "game\project.godot","game\export_presets.cfg","stack.json","README.md","AGENTS.md" -Pattern "\[Game Name\]|com\.example\.game"
+Select-String -Path "game\project.godot","game\export_presets.cfg","ogs_stack.json","README.md","AGENTS.md" -Pattern "\[Game Name\]|com\.example\.game"
 
 # 2. Run headless Godot asset import and unit tests
 godot --headless --editor --quit --path game
