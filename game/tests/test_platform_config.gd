@@ -15,6 +15,8 @@ func test_android_and_web_export_presets() -> void:
 	assert_file_exists("res://assets/icons/icon.png", "icon.png should exist.")
 	assert_file_exists("res://assets/icons/icon_foreground.png", "icon_foreground.png should exist.")
 	assert_file_exists("res://assets/icons/icon_background.png", "icon_background.png should exist.")
+	var icon_tex: Texture2D = load("res://assets/icons/icon.png") as Texture2D
+	assert_not_null(icon_tex, "icon.png should load cleanly as a valid Texture2D.")
 
 	var cfg: ConfigFile = ConfigFile.new()
 	var err: int = cfg.load("res://export_presets.cfg")

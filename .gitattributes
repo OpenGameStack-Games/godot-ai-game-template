@@ -84,3 +84,7 @@
 *.dll filter=lfs diff=lfs merge=lfs -text
 *.so filter=lfs diff=lfs merge=lfs -text
 *.dylib filter=lfs diff=lfs merge=lfs -text
+
+# Template starter assets (stored directly in Git so GitHub template instantiation works)
+game/assets/fonts/* -filter -diff -merge -text
+game/assets/icons/* -filter -diff -merge -text
