@@ -53,7 +53,7 @@ Welcome to the **[Game Name]** repository, built on the **OpenGameStack (OGS) Go
 │   ├── AGENTS.md                    # Directory-specific rules for Godot scenes, scripts, & tests
 │   ├── project.godot                # Engine config (version, autoloads, display, renderer)
 │   ├── export_presets.cfg           # Android and Web export preset definitions
-│   ├── assets/                      # Fonts, icons, audio, textures (tracked via Git LFS)
+│   ├── assets/                      # Starter fonts and icons in Git; large binary media via Git LFS
 │   ├── autoloads/                   # Global singletons (mcp_interaction_server.gd)
 │   ├── resources/                   # Shared .tres resources (default_font.tres)
 │   ├── scenes/                      # Godot scene files (.tscn)
@@ -86,7 +86,8 @@ Welcome to the **[Game Name]** repository, built on the **OpenGameStack (OGS) Go
      gh pr view <id> --json title,body,state,baseRefName,headRefName,commits,files
      ```
 5. **Git LFS for Binary Assets:**
-   - Binary assets (`.png`, `.ttf`, `.wav`, `.ogg`, `.mp3`, `.glb`, etc.) are tracked via Git LFS per [`.gitattributes`](.gitattributes). Ensure `git lfs install` is active before committing binary files.
+   - Core template starter assets in `game/assets/` (specifically fonts in `game/assets/fonts/` and icons in `game/assets/icons/`) are stored directly in Git to support GitHub template instantiation ("Use this template"), avoiding 404 pointer errors when bootstrapping new projects.
+   - User-added binary assets (large audio, 3D models, archives, video) can use Git LFS per [`.gitattributes`](.gitattributes). Ensure `git lfs install` is active before committing large binary files.
 
 ---
 

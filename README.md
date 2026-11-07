@@ -69,12 +69,15 @@ This template includes production-tested GitHub Actions workflows:
 - **Web Release (`web_release.yml`):** Automatically builds an HTML5 Web export, attaches a zip archive to GitHub Releases, and supports automated deployment to Itch.io via Butler when `BUTLER_API_KEY`, `ITCH_USERNAME`, and `ITCH_GAME` secrets are configured.
 - **GL Compatibility Renderer:** Configured out of the box with `gl_compatibility` (OpenGL ES 3.0 / WebGL 2.0), guaranteeing optimal compatibility across Web/HTML5 exports and Android mobile hardware.
 
-## Git LFS Requirement
-This template is configured to use [Git Large File Storage (LFS)](https://git-lfs.com/) for all binary assets (images, audio, video, 3D models, fonts, etc.). It is assumed that repositories instantiated from this template will have Git LFS installed and enabled locally.
+## Git LFS and Starter Assets
+This template uses a hybrid approach for binary asset management to guarantee seamless repository instantiation via GitHub's "Use this template" feature:
+- **Starter Assets (Committed Directly to Git):** Prepackaged template starter assets in `game/assets/fonts/` and `game/assets/icons/` are committed directly to standard Git history. Because GitHub template instantiation copies repository commits without Git LFS storage objects, keeping starter fonts and icons in Git prevents HTTP 404 pointer errors and allows newly generated repositories to clone, import, and test immediately without special LFS setup.
+- **User-Added Binary Assets (Tracked via Git LFS):** User-added binary media (large audio files, 3D models, videos, texture archives, and compiled libraries) are tracked via [Git Large File Storage (LFS)](https://git-lfs.com/) using wildcard rules in `.gitattributes`.
 
-To ensure your assets are tracked correctly:
+To ensure your new binary assets are tracked correctly:
 1. Ensure Git LFS is installed on your machine (`git lfs install`).
-2. The provided `.gitattributes` file will automatically handle LFS tracking for standard game asset extensions.
+2. The provided `.gitattributes` file will automatically handle LFS tracking for standard game asset extensions while preserving starter asset exemptions.
+
 
 ## License
 This project uses a split license:
